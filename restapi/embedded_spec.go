@@ -39,6 +39,7 @@ func init() {
         "tags": [
           "todos"
         ],
+        "operationId": "find_todos",
         "parameters": [
           {
             "type": "integer",
@@ -134,6 +135,7 @@ func init() {
         "tags": [
           "todos"
         ],
+        "operationId": "find_todos",
         "parameters": [
           {
             "type": "integer",
