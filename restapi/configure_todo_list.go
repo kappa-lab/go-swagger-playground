@@ -63,10 +63,6 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 	})
 
 	api.TodosAddOneHandler = todos.AddOneHandlerFunc(func(params todos.AddOneParams) middleware.Responder {
-		if params.Body == nil {
-			return todos.NewAddOneDefault(500).WithPayload(
-				&models.Error{Code: 500, Message: swag.String("item must be present")})
-		}
 		item, _ := addItem(params.Body)
 		return todos.NewAddOneCreated().WithPayload(item)
 	})

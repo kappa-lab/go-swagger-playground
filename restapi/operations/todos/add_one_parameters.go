@@ -7,6 +7,7 @@ package todos
 
 import (
 	"context"
+	"io"
 	"net/http"
 
 	"github.com/go-openapi/errors"
@@ -35,6 +36,7 @@ type AddOneParams struct {
 	HTTPRequest *http.Request `json:"-"`
 
 	/*
+	  Required: true
 	  In: body
 	*/
 	Body *models.Item
@@ -53,7 +55,11 @@ func (o *AddOneParams) BindRequest(r *http.Request, route *middleware.MatchedRou
 		defer r.Body.Close()
 		var body models.Item
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
-			res = append(res, errors.NewParseError("body", "body", "", err))
+			if err == io.EOF {
+				res = append(res, errors.Required("body", "body", ""))
+			} else {
+				res = append(res, errors.NewParseError("body", "body", "", err))
+			}
 		} else {
 			// validate body object
 			if err := body.Validate(route.Formats); err != nil {
@@ -69,6 +75,8 @@ func (o *AddOneParams) BindRequest(r *http.Request, route *middleware.MatchedRou
 				o.Body = &body
 			}
 		}
+	} else {
+		res = append(res, errors.Required("body", "body", ""))
 	}
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
