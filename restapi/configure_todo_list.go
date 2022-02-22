@@ -5,13 +5,22 @@ package restapi
 import (
 	"crypto/tls"
 	"net/http"
+	"sync"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/swag"
 
+	"github.com/kappa-lab/go-swagger-playground/models"
 	"github.com/kappa-lab/go-swagger-playground/restapi/operations"
 	"github.com/kappa-lab/go-swagger-playground/restapi/operations/todos"
+)
+
+var (
+	items     = make(map[int64]*models.Item)
+	lastID    int64
+	itemsLock = &sync.Mutex{}
 )
 
 //go:generate swagger generate server --target ../../go-swagger-playground --name TodoList --spec ../swagger.yml --principal interface{}
@@ -38,17 +47,38 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.TodosFindTodosHandler == nil {
-		api.TodosFindTodosHandler = todos.FindTodosHandlerFunc(func(params todos.FindTodosParams) middleware.Responder {
-			return middleware.NotImplemented("operation todos.FindTodos has not yet been implemented")
-		})
-	}
+	api.TodosFindTodosHandler = todos.FindTodosHandlerFunc(func(params todos.FindTodosParams) middleware.Responder {
+		mergParam := todos.NewFindTodosParams()
+		mergParam.Since = swag.Int64(0)
+		if params.Limit != nil {
+			mergParam.Limit = params.Limit
+		}
+		if params.Since != nil {
+			mergParam.Since = params.Since
+		}
+		return todos.NewFindTodosOK().
+			WithPayload(
+				getItems(*mergParam.Since, *mergParam.Limit))
+	})
 
 	api.PreServerShutdown = func() {}
 
 	api.ServerShutdown = func() {}
 
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
+}
+
+func getItems(since int64, limit int32) (result []*models.Item) {
+	result = make([]*models.Item, 0)
+	for id, item := range items {
+		if len(result) >= int(limit) {
+			return
+		}
+		if since == 0 || id > since {
+			result = append(result, item)
+		}
+	}
+	return
 }
 
 // The TLS configuration before HTTPS server starts.
