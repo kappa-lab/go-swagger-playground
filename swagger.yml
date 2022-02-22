@@ -1,12 +1,36 @@
 consumes:
-- application/io.goswagger.examples.todo-list.v1+json
+  - application/io.goswagger.examples.todo-list.v1+json
 info:
   description: From the todo list tutorial on goswagger.io
   title: A Todo list application
   version: 1.0.0
-paths: {}
+paths:
+  /:
+    get:
+      tags:
+        - todos
+      responses:
+        200:
+          description: list the todo ope
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/item"
+definitions:
+  item:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+      description:
+        type: string
+        minLength: 1
+      completed:
+        type: boolean
 produces:
-- application/io.goswagger.examples.todo-list.v1+json
+  - application/io.goswagger.examples.todo-list.v1+json
 schemes:
-- http
+  - http
 swagger: "2.0"
