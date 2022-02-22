@@ -6,6 +6,7 @@ package todos
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/go-openapi/errors"
@@ -13,6 +14,9 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
+
+	"github.com/kappa-lab/go-swagger-playground/models"
 )
 
 // NewUpdateOneParams creates a new UpdateOneParams object
@@ -35,7 +39,7 @@ type UpdateOneParams struct {
 	/*
 	  In: body
 	*/
-	Body interface{}
+	Body *models.Item
 	/*
 	  Required: true
 	  In: path
@@ -54,12 +58,23 @@ func (o *UpdateOneParams) BindRequest(r *http.Request, route *middleware.Matched
 
 	if runtime.HasBody(r) {
 		defer r.Body.Close()
-		var body interface{}
+		var body models.Item
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
 			res = append(res, errors.NewParseError("body", "body", "", err))
 		} else {
-			// no validation on generic interface
-			o.Body = body
+			// validate body object
+			if err := body.Validate(route.Formats); err != nil {
+				res = append(res, err)
+			}
+
+			ctx := validate.WithOperationRequest(context.Background())
+			if err := body.ContextValidate(ctx, route.Formats); err != nil {
+				res = append(res, err)
+			}
+
+			if len(res) == 0 {
+				o.Body = &body
+			}
 		}
 	}
 

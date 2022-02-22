@@ -25,7 +25,7 @@ type UpdateOneOK struct {
 	/*
 	  In: Body
 	*/
-	Payload interface{} `json:"body,omitempty"`
+	Payload *models.Item `json:"body,omitempty"`
 }
 
 // NewUpdateOneOK creates UpdateOneOK with default headers values
@@ -35,13 +35,13 @@ func NewUpdateOneOK() *UpdateOneOK {
 }
 
 // WithPayload adds the payload to the update one o k response
-func (o *UpdateOneOK) WithPayload(payload interface{}) *UpdateOneOK {
+func (o *UpdateOneOK) WithPayload(payload *models.Item) *UpdateOneOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the update one o k response
-func (o *UpdateOneOK) SetPayload(payload interface{}) {
+func (o *UpdateOneOK) SetPayload(payload *models.Item) {
 	o.Payload = payload
 }
 
@@ -49,9 +49,11 @@ func (o *UpdateOneOK) SetPayload(payload interface{}) {
 func (o *UpdateOneOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
 	}
 }
 

@@ -57,11 +57,11 @@ paths:
             $ref: "#/definitions/error"
   /{id}:
     parameters:
-    - type: integer
-      format: int64
-      name: id
-      in: path
-      required: true
+      - type: integer
+        format: int64
+        name: id
+        in: path
+        required: true
     put:
       tags:
         - todos
@@ -70,12 +70,12 @@ paths:
         - name: body
           in: body
           schema:
-            $ref: ""#/definitions/item"
+            $ref: "#/definitions/item"
       responses:
         200:
           description: OK
           schema:
-            $ref: ""#/definitions/item"
+            $ref: "#/definitions/item"
         default:
           description: error
           schema:

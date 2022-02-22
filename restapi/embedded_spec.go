@@ -115,7 +115,7 @@ func init() {
             "name": "body",
             "in": "body",
             "schema": {
-              "$ref": ""
+              "$ref": "#/definitions/item"
             }
           }
         ],
@@ -123,7 +123,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": ""
+              "$ref": "#/definitions/item"
             }
           },
           "default": {
@@ -298,7 +298,7 @@ func init() {
             "name": "body",
             "in": "body",
             "schema": {
-              "$ref": ""
+              "$ref": "#/definitions/item"
             }
           }
         ],
@@ -306,7 +306,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": ""
+              "$ref": "#/definitions/item"
             }
           },
           "default": {
