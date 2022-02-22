@@ -44,6 +44,9 @@ func NewTodoListAPI(spec *loads.Document) *TodoListAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		TodosAddOneHandler: todos.AddOneHandlerFunc(func(params todos.AddOneParams) middleware.Responder {
+			return middleware.NotImplemented("operation todos.AddOne has not yet been implemented")
+		}),
 		TodosFindTodosHandler: todos.FindTodosHandlerFunc(func(params todos.FindTodosParams) middleware.Responder {
 			return middleware.NotImplemented("operation todos.FindTodos has not yet been implemented")
 		}),
@@ -83,6 +86,8 @@ type TodoListAPI struct {
 	//   - application/io.goswagger.examples.todo-list.v1+json
 	JSONProducer runtime.Producer
 
+	// TodosAddOneHandler sets the operation handler for the add one operation
+	TodosAddOneHandler todos.AddOneHandler
 	// TodosFindTodosHandler sets the operation handler for the find todos operation
 	TodosFindTodosHandler todos.FindTodosHandler
 
@@ -162,6 +167,9 @@ func (o *TodoListAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.TodosAddOneHandler == nil {
+		unregistered = append(unregistered, "todos.AddOneHandler")
+	}
 	if o.TodosFindTodosHandler == nil {
 		unregistered = append(unregistered, "todos.FindTodosHandler")
 	}
@@ -253,6 +261,10 @@ func (o *TodoListAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"][""] = todos.NewAddOne(o.context, o.TodosAddOneHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
