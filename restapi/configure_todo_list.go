@@ -70,8 +70,12 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 	api.TodosUpdateOneHandler = todos.UpdateOneHandlerFunc(func(params todos.UpdateOneParams) middleware.Responder {
 		item, err := updateItem(params.ID, params.Body)
 		if err != nil {
-			return todos.NewUpdateOneDefault(int(err.Code())).WithPayload(&models.Error{Code: int64(err.Code()), Message: swag.String(err.Error())})
+			switch e := err.(type) {
+			case errors.Error:
+				return todos.NewUpdateOneDefault(int(e.Code())).WithPayload(&models.Error{Code: int64(e.Code()), Message: swag.String(err.Error())})
+			}
 
+			return todos.NewUpdateOneDefault(500).WithPayload(&models.Error{Code: 500, Message: swag.String(err.Error())})
 		}
 
 		return todos.NewUpdateOneOK().WithPayload(item)
@@ -113,7 +117,7 @@ func addItem(item *models.Item) (*models.Item, error) {
 	return newItem, nil
 }
 
-func updateItem(id int64, item *models.Item) (*models.Item, errors.Error) {
+func updateItem(id int64, item *models.Item) (*models.Item, error) {
 	itemsLock.Lock()
 	defer itemsLock.Unlock()
 
