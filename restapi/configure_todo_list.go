@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"net/http"
 	"sync"
+	"sync/atomic"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
@@ -61,6 +62,15 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 				getItems(*mergParam.Since, *mergParam.Limit))
 	})
 
+	api.TodosAddOneHandler = todos.AddOneHandlerFunc(func(params todos.AddOneParams) middleware.Responder {
+		if params.Body == nil {
+			return todos.NewAddOneDefault(500).WithPayload(
+				&models.Error{Code: 500, Message: swag.String("item must be present")})
+		}
+		item, _ := addItem(params.Body)
+		return todos.NewAddOneCreated().WithPayload(item)
+	})
+
 	api.PreServerShutdown = func() {}
 
 	api.ServerShutdown = func() {}
@@ -79,6 +89,22 @@ func getItems(since int64, limit int32) (result []*models.Item) {
 		}
 	}
 	return
+}
+
+func addItem(item *models.Item) (*models.Item, error) {
+	itemsLock.Lock()
+	defer itemsLock.Unlock()
+
+	id := atomic.AddInt64(&lastID, 1)
+	newItem := &models.Item{
+		Description: item.Description,
+		ID:          id,
+		Completed:   false,
+	}
+
+	items[id] = newItem
+
+	return newItem, nil
 }
 
 // The TLS configuration before HTTPS server starts.
