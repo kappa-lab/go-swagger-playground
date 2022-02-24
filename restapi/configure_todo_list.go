@@ -81,6 +81,20 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 		return todos.NewUpdateOneOK().WithPayload(item)
 	})
 
+	api.TodosDestroyOneHandler = todos.DestroyOneHandlerFunc(func(params todos.DestroyOneParams) middleware.Responder {
+		err := deleteItem(params.ID)
+		if err != nil {
+			switch e := err.(type) {
+			case errors.Error:
+				return todos.NewDestroyOneDefault(int(e.Code())).WithPayload(&models.Error{Code: int64(e.Code()), Message: swag.String(err.Error())})
+			}
+
+			return todos.NewDestroyOneDefault(500).WithPayload(&models.Error{Code: 500, Message: swag.String(err.Error())})
+		}
+
+		return todos.NewDestroyOneNoContent()
+	})
+
 	api.PreServerShutdown = func() {}
 
 	api.ServerShutdown = func() {}
@@ -135,6 +149,20 @@ func updateItem(id int64, item *models.Item) (*models.Item, error) {
 	items[newItem.ID] = newItem
 
 	return newItem, nil
+}
+
+func deleteItem(id int64) error {
+	itemsLock.Lock()
+	defer itemsLock.Unlock()
+
+	_, exixst := items[id]
+	if !exixst {
+		return errors.NotFound("not fountd id:%d", id)
+	}
+
+	delete(items, id)
+
+	return nil
 }
 
 // The TLS configuration before HTTPS server starts.
