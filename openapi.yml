@@ -1,0 +1,14 @@
+openapi: 3.0.0
+info:
+  description: From the todo list tutorial on goswagger.io
+  title: A Todo list application
+  version: 1.0.0
+paths:
+  /:
+    get:
+      tags:
+        - todos
+      operationId: find_todos
+      responses:
+        200:
+          description: list the todo ope
