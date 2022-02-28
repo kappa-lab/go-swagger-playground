@@ -59,6 +59,49 @@ paths:
             application/io.goswagger.examples.todo-list.v1+json:
               schema:
                 $ref: "#/components/schemas/error"
+  /{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+    put:
+      tags:
+        - todos
+      operationId: updateOne
+      requestBody:
+        content:
+          application/io.goswagger.examples.todo-list.v1+json:
+            schema:
+              $ref: "#/components/schemas/item"
+      responses:
+        200:
+          description: OK
+          content:
+            application/io.goswagger.examples.todo-list.v1+json:
+              schema:
+                $ref: "#/components/schemas/item"
+        default:
+          description: error
+          content:
+            application/io.goswagger.examples.todo-list.v1+json:
+              schema:
+                $ref: "#/components/schemas/error"
+    delete:
+      tags:
+        - todos
+      operationId: destroyOne
+      responses:
+        204:
+          description: Deleted
+        default:
+          description: error
+          content:
+            application/io.goswagger.examples.todo-list.v1+json:
+              schema:
+                $ref: "#/components/schemas/error"
 components:
   schemas:
     item:
