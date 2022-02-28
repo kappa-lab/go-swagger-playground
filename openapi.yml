@@ -36,6 +36,29 @@ paths:
             application/io.goswagger.examples.todo-list.v1+json:
               schema:
                 $ref: "#/components/schemas/error"
+    post:
+      tags:
+        - todos
+      operationId: addOne
+      requestBody:
+        required: true
+        content:
+          application/io.goswagger.examples.todo-list.v1+json:
+            schema:
+              $ref: "#/components/schemas/item"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/io.goswagger.examples.todo-list.v1+json:
+              schema:
+                $ref: "#/components/schemas/item"
+        default:
+          description: error
+          content:
+            application/io.goswagger.examples.todo-list.v1+json:
+              schema:
+                $ref: "#/components/schemas/error"
 components:
   schemas:
     item:
