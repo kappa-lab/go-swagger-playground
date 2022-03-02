@@ -21,3 +21,10 @@ modify:
 delete:
 	curl -i localhost:3333/1 -X DELETE -H 'Content-Type: application/io.goswagger.examples.todo-list.v1+json' 
 
+
+mock-setup:
+	docker pull danielgtaylor/apisprout
+
+mock-run:
+	docker run -p 8000:8000 -v `pwd`/openapi.yml:/api.yaml danielgtaylor/apisprout /api.yaml
+
