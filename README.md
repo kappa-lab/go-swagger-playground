@@ -85,3 +85,19 @@ Content-Length: 41
 
 {"code":404,"message":"not fountd id:1"}
 ```
+
+# Mock Server
+- useing https://github.com/danielgtaylor/apisprout
+- onliy first time
+    ```sh
+    make mock-setup
+    ```
+- run mock server
+    ```sh
+    make mock-run
+    ```
+- check
+    ```sh
+    curl -i 127.0.0.1:8000
+    ```
+
