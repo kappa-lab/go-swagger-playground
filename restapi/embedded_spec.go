@@ -19,10 +19,10 @@ var (
 func init() {
 	SwaggerJSON = json.RawMessage([]byte(`{
   "consumes": [
-    "application/io.goswagger.examples.todo-list.v1+json"
+    "application/json"
   ],
   "produces": [
-    "application/io.goswagger.examples.todo-list.v1+json"
+    "application/json"
   ],
   "schemes": [
     "http"
@@ -202,10 +202,10 @@ func init() {
 }`))
 	FlatSwaggerJSON = json.RawMessage([]byte(`{
   "consumes": [
-    "application/io.goswagger.examples.todo-list.v1+json"
+    "application/json"
   ],
   "produces": [
-    "application/io.goswagger.examples.todo-list.v1+json"
+    "application/json"
   ],
   "schemes": [
     "http"
