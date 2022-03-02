@@ -26,3 +26,9 @@ delete:
 
 test:
 	go test -v ./client 	
+
+mock-setup:
+	docker pull danielgtaylor/apisprout
+
+mock-run:
+	docker run -p 8000:8000 -v `pwd`/openapi.yml:/api.yaml danielgtaylor/apisprout /api.yaml
